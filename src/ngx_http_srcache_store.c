@@ -179,21 +179,20 @@ ngx_http_srcache_header_filter(ngx_http_request_t *r)
 
         sp = (ngx_uint_t *) slcf->store_statuses;
 
-        /* store_statuses are in the descent order */
         while (r->headers_out.status < *sp) {
-            sp ++;
+            sp++;
         }
 
-        if (r->headers_out.status != *sp) {
+        if (*sp == 0 || r->headers_out.status > *sp) {
             ngx_log_debug1(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
                            "srcache_store bypassed because of unmatched "
-                           "status code %i with srcache_store_statuses",
+                           "status code %ui with srcache_store_statuses",
                            r->headers_out.status);
 
             return ngx_http_srcache_next_header_filter(r);
         }
 
-        /* r->headers_out.status == *sp */
+        /* r->headers_out.status == (ngx_uint_t) *sp */
 
     } else {
 
